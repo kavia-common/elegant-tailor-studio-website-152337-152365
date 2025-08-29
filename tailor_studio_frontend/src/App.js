@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import './App.css';
 
 /**
@@ -128,11 +128,17 @@ function App() {
   }, []);
 
   const SectionHeader = ({ kicker, title, desc }) => (
-    <div className="section-header">
+    <motion.div
+      className="section-header"
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-120px' }}
+      transition={{ duration: .45 }}
+    >
       <div className="section-kicker">{kicker}</div>
       <h2 className="section-title">{title}</h2>
       {desc && <p className="section-desc">{desc}</p>}
-    </div>
+    </motion.div>
   );
 
   const navItems = sections.map(s => (
@@ -141,14 +147,13 @@ function App() {
       className="nav-link"
       onClick={() => scrollToId(s.id)}
       aria-current={active === s.id ? 'page' : undefined}
-      style={active === s.id ? { background: 'rgba(39,68,114,0.1)', color: 'var(--color-primary)' } : undefined}
     >
       {s.label}
     </button>
   ));
 
   return (
-    <>
+    <LayoutGroup>
       {/* Sticky Navbar */}
       <nav className="navbar">
         <div className="container nav-inner">
@@ -158,6 +163,23 @@ function App() {
           </div>
           <div className="nav-links">
             {navItems}
+            {/* Animated active indicator under the current page link for premium feel */}
+            <AnimatePresence>
+              {active && (
+                <motion.div
+                  layoutId="active-pill"
+                  style={{
+                    position: 'absolute',
+                    height: 36,
+                    borderRadius: 12,
+                    background: 'rgba(39,68,114,0.10)',
+                    boxShadow: 'inset 0 0 0 1px rgba(39,68,114,0.18)'
+                  }}
+                  initial={false}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+            </AnimatePresence>
             <button className="btn btn-outline" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
               {theme === 'light' ? 'Dark' : 'Light'}
             </button>
@@ -263,6 +285,7 @@ function App() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: .4, delay: i * 0.05 }}
+                whileHover={{ y: -4 }}
               >
                 <div style={{ fontSize: 28 }}>{c.k}</div>
                 <h3 className="card-title">{c.t}</h3>
@@ -287,6 +310,7 @@ function App() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: .4, delay: i * 0.03 }}
+                whileHover={{ scale: 1.01 }}
                 aria-label={`Gallery item ${i + 1}`}
               />
             ))}
@@ -398,12 +422,13 @@ function App() {
             exit={{ opacity: 0, y: 20 }}
             aria-label="Back to top"
             title="Back to top"
+            whileHover={{ y: -2 }}
           >
             ↑
           </motion.button>
         )}
       </AnimatePresence>
-    </>
+    </LayoutGroup>
   );
 }
 
@@ -411,7 +436,7 @@ function App() {
 function StatusLine({ status }) {
   if (!status?.message) return null;
   const color = status.type === 'success' ? 'var(--color-primary)' : status.type === 'error' ? '#b91c1c' : 'inherit';
-  return <span role="status" aria-live="polite" style={{ color, fontWeight: 600 }}>{status.message}</span>;
+  return <span role="status" aria-live="polite" style={{ color, fontWeight: 700 }}>{status.message}</span>;
 }
 
 function FaqItem({ q, a }) {
@@ -429,7 +454,7 @@ function FaqItem({ q, a }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: .2 }}
+            transition={{ duration: .22 }}
           >
             <div style={{ paddingTop: 6 }}>{a}</div>
           </motion.div>
