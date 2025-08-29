@@ -1,0 +1,4 @@
+{
+    "command": "PORT=<port> HOST=<host> BROWSER=none npm start",
+    "working_directory": "/home/kavia/workspace/code-generation/elegant-tailor-studio-website-152337-152365/tailor_studio_frontend"
+}
